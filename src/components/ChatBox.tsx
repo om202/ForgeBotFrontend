@@ -32,7 +32,7 @@ export default function ChatBox({
       };
       setMessages((prev) => [...prev, botReply]);
       setIsTyping(false);
-    }, 1000);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -94,8 +94,8 @@ export default function ChatBox({
               <Image
                 src="/chat_logo.png"
                 alt="bot"
-                width={20}
-                height={20}
+                width={15}
+                height={15}
                 style={{ filter: "invert(1) brightness(200%)" }}
               />
             </div>
