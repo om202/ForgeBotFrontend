@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 export default function ChatBox({
@@ -13,6 +13,7 @@ export default function ChatBox({
     { from: "bot", text: "Hi 👋 I'm ForgeBot. How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -23,21 +24,25 @@ export default function ChatBox({
       text: "Thanks for your message. I'm just a placeholder for now! 🤖",
     };
 
-    setMessages([...messages, userMessage, botReply]);
+    setMessages((prev) => [...prev, userMessage, botReply]);
     setInput("");
   };
 
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className="fixed p-2 bottom-4 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200">
+    <div className="fixed p-2 bottom-4 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
       {/* Header */}
-      <div className="text-black px-4 py-2 text-sm flex justify-between">
-        <div className="flex items-center justify-center gap-1 flex-1">
+      <div className="text-black px-4 py-2 text-sm flex justify-between items-center border-b border-gray-200">
+        <div className="flex items-center gap-1">
           <Image src="/chat_logo.png" alt="alt" width={24} height={24} />
           <span className="font-bold">ForgeBot</span>
         </div>
         <button
           onClick={() => setOpen(false)}
-          className="text-black text-lg leading-none cursor-pointer opacity-50"
+          className="opacity-50 hover:opacity-100 transition"
         >
           <Image src="/down.svg" alt="cross" width={14} height={14} />
         </button>
@@ -48,12 +53,12 @@ export default function ChatBox({
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex gap-2 items-baseline ${
+            className={`flex gap-2 items-baseline transition-all duration-1000 ease-out transform ${
               msg.from === "user" ? "justify-end" : "justify-start"
             }`}
           >
             {msg.from !== "user" && (
-              <div className="p-1.5 bg-indigo-600 rounded-4xl">
+              <div className="p-1.5 bg-indigo-600 rounded-4xl transition-all duration-1000">
                 <Image
                   src="/chat_logo.png"
                   alt="bot"
@@ -64,7 +69,7 @@ export default function ChatBox({
               </div>
             )}
             <div
-              className={`text-sm px-3 py-2 rounded-md ${
+              className={`text-sm px-3 py-2 rounded-md transition-all duration-1000 ease-in-out transform ${
                 msg.from === "user"
                   ? "bg-indigo-700 text-white text-right py-3 px-4 w-fit"
                   : "bg-gray-100 py-3 px-4 self-start"
@@ -74,6 +79,7 @@ export default function ChatBox({
             </div>
           </div>
         ))}
+        <div ref={endRef} />
       </div>
 
       {/* Input */}
@@ -84,9 +90,9 @@ export default function ChatBox({
             autoComplete="new-password"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 text-sm px-3 py-3 border rounded-l-md outline-none border-gray-200 focus:border-indigo-300"
-            placeholder="Type a message..."
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            className="flex-1 text-sm px-3 py-3 border rounded-l-md outline-none border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 transition"
+            placeholder="Type a message..."
           />
           <button
             onClick={handleSend}
@@ -97,15 +103,11 @@ export default function ChatBox({
         </div>
       </div>
 
-      <div className="flex py-3 px-3  pt-4 gap-1 text-xs justify-center">
-        <span className="text-gray-500 italic">Powered by</span>
-        <Image
-          src="/chat_logo.png"
-          alt="alt"
-          width={16}
-          height={16}
-        />
-        <span>ForgeBot</span>
+      {/* Footer */}
+      <div className="flex py-3 px-3 pt-4 gap-1 text-xs justify-center text-gray-500">
+        <span className="italic">Powered by</span>
+        <Image src="/chat_logo.png" alt="alt" width={16} height={16} />
+        <span className="font-medium text-gray-700">ForgeBot</span>
       </div>
     </div>
   );
