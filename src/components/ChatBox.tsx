@@ -14,6 +14,7 @@ export default function ChatBox({
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
@@ -65,7 +66,7 @@ export default function ChatBox({
             }`}
           >
             {msg.from !== "user" && (
-              <div className="p-1.5 bg-indigo-600 rounded-4xl transition-all duration-300">
+              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
                 <Image
                   src="/chat_logo.png"
                   alt="bot"
@@ -75,6 +76,7 @@ export default function ChatBox({
                 />
               </div>
             )}
+
             <div
               className={`text-sm px-3 py-2 rounded-md transition-all duration-300 ease-in-out transform ${
                 msg.from === "user"
@@ -94,8 +96,8 @@ export default function ChatBox({
               <Image
                 src="/chat_logo.png"
                 alt="bot"
-                width={15}
-                height={15}
+                width={20}
+                height={20}
                 style={{ filter: "invert(1) brightness(200%)" }}
               />
             </div>
@@ -111,19 +113,19 @@ export default function ChatBox({
 
       {/* Input */}
       <div className="px-3">
-        <div className="flex">
+        <div className="flex overflow-hidden rounded-md focus-within:ring-1 focus-within:ring-indigo-500 transition-all duration-200">
           <input
             type="text"
             autoComplete="new-password"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            className="flex-1 text-sm px-3 py-3 border rounded-l-md outline-none border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 transition"
+            className={`flex-1 text-sm px-3 py-3 outline-none rounded-l-md ${!isFocused ? "border border-r-0 border-gray-200" : "border-gray-50"}`}
             placeholder="Type a message..."
           />
           <button
             onClick={handleSend}
-            className="bg-indigo-600 text-white px-4 rounded-r-md hover:bg-indigo-700 transition"
+            className="bg-indigo-600 text-white px-4 hover:bg-indigo-700 transition"
           >
             Send
           </button>
