@@ -13,24 +13,31 @@ export default function ChatBox({
     { from: "bot", text: "Hi 👋 I'm ForgeBot. How can I help you today?" },
   ]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
 
     const userMessage = { from: "user", text: input.trim() };
-    const botReply = {
-      from: "bot",
-      text: "Thanks for your message. I'm just a placeholder for now! 🤖",
-    };
-
-    setMessages((prev) => [...prev, userMessage, botReply]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setIsTyping(true);
+
+    // Simulate AI delay
+    setTimeout(() => {
+      const botReply = {
+        from: "bot",
+        text: "Thanks for your message. I'm just a placeholder for now! 🤖",
+      };
+      setMessages((prev) => [...prev, botReply]);
+      setIsTyping(false);
+    }, 1000);
   };
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   return (
     <div className="fixed p-2 bottom-4 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
@@ -53,12 +60,12 @@ export default function ChatBox({
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex gap-2 items-baseline transition-all duration-1000 ease-out transform ${
+            className={`flex gap-2 items-baseline transition-all duration-300 ease-out transform ${
               msg.from === "user" ? "justify-end" : "justify-start"
             }`}
           >
             {msg.from !== "user" && (
-              <div className="p-1.5 bg-indigo-600 rounded-4xl transition-all duration-1000">
+              <div className="p-1.5 bg-indigo-600 rounded-4xl transition-all duration-300">
                 <Image
                   src="/chat_logo.png"
                   alt="bot"
@@ -69,7 +76,7 @@ export default function ChatBox({
               </div>
             )}
             <div
-              className={`text-sm px-3 py-2 rounded-md transition-all duration-1000 ease-in-out transform ${
+              className={`text-sm px-3 py-2 rounded-md transition-all duration-300 ease-in-out transform ${
                 msg.from === "user"
                   ? "bg-indigo-700 text-white text-right py-3 px-4 w-fit"
                   : "bg-gray-100 py-3 px-4 self-start"
@@ -79,6 +86,26 @@ export default function ChatBox({
             </div>
           </div>
         ))}
+
+        {/* Typing indicator */}
+        {isTyping && (
+          <div className="flex gap-2 items-baseline justify-start">
+            <div className="p-1.5 bg-indigo-600 rounded-4xl">
+              <Image
+                src="/chat_logo.png"
+                alt="bot"
+                width={20}
+                height={20}
+                style={{ filter: "invert(1) brightness(200%)" }}
+              />
+            </div>
+            <div className="typing bg-gray-100 py-3 px-4 rounded-md text-sm text-gray-500 animate-pulse">
+              <div className="dot"></div>
+              <div className="dot"></div>
+              <div className="dot"></div>
+            </div>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
