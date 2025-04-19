@@ -28,7 +28,7 @@ export default function ChatBox({
   };
 
   return (
-    <div className="fixed p-2 bottom-1 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200">
+    <div className="fixed p-2 bottom-4 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200">
       {/* Header */}
       <div className="text-black px-4 py-2 text-sm flex justify-between">
         <div className="flex items-center justify-center gap-1 flex-1">
