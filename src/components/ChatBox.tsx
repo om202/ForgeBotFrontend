@@ -14,7 +14,6 @@ export default function ChatBox({
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const handleSend = () => {
@@ -120,7 +119,7 @@ export default function ChatBox({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            className={`flex-1 text-sm px-3 py-3 outline-none rounded-l-md ${!isFocused ? "border border-r-0 border-gray-200" : "border-gray-50"}`}
+            className={`flex-1 text-sm px-3 py-3 outline-none rounded-l-md border border-r-0 border-gray-200`}
             placeholder="Type a message..."
           />
           <button
