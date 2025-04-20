@@ -54,6 +54,16 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const { messages, isTyping, error, sendMessage } = useChatMessages();
+  const [visibleError, setVisibleError] = useState(false);
+
+  // Update this in the same useChatMessages block (or move it here if needed)
+  useEffect(() => {
+    if (error) {
+      setVisibleError(true);
+      const timer = setTimeout(() => setVisibleError(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const handleSend = () => {
     sendMessage(input);
@@ -108,6 +118,29 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
             Send
           </button>
         </div>
+        {/* Error display */}
+        {visibleError && (
+          <div
+            className={`px-4 py-2 text-xs justify-center text-red-700 bg-red-50 border border-red-200 rounded-md mt-2 flex items-center gap-2 transition-opacity duration-1000 ease-in-out ${
+              visibleError ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <svg
+              className="w-4 h-4 text-red-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01M12 5a7 7 0 11-7 7 7 7 0 017-7z"
+              />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
       </div>
 
       {/* Footer */}
@@ -116,13 +149,6 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
         <Image src="/chat_logo.png" alt="alt" width={16} height={16} />
         <span className="font-medium text-gray-700">ForgeBot</span>
       </div>
-
-      {/* Error display */}
-      {error && (
-        <div className="px-3 py-2 text-red-500 text-sm text-center">
-          {error}
-        </div>
-      )}
     </div>
   );
 }
