@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import { chatService } from '../../services/chatService';
 import { MessageBubble } from "./MessageBubble";
@@ -57,7 +57,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
   const [dimensions, setDimensions] = useState({ width: 380, height: 528 }); // 528px = 132 * 4px (original height)
   const [isResizing, setIsResizing] = useState(false);
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing) return;
     
     const resizeType = (e.target as HTMLElement).dataset.resize;
@@ -68,7 +68,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
       const newWidth = Math.max(300, window.innerWidth - e.clientX);
       setDimensions(prev => ({ ...prev, width: newWidth }));
     }
-  };
+  }, [isResizing]);
 
   const handleMouseUp = () => {
     setIsResizing(false);
@@ -83,7 +83,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isResizing]);
+  }, [handleMouseMove, isResizing]);
 
   const handleSend = () => {
     sendMessage(input);
