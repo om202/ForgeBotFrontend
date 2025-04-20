@@ -37,6 +37,7 @@ const useChatMessages = () => {
         from: "bot",
         text: response.reply,
       };
+      console.log("Bot Reply ", botReply);
       setMessages((prev) => [...prev, botReply]);
     } catch (err) {
       setError('Failed to send message. Please try again.');
