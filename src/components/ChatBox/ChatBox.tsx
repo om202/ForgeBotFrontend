@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { chatService } from '../../services/chatService';
+import { chatService } from "../../services/chatService";
 import { MessageBubble } from "./MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
 
@@ -32,7 +32,7 @@ const useChatMessages = () => {
     setError(null);
 
     try {
-      const response = await chatService.sendMessage('user_123', text.trim());
+      const response = await chatService.sendMessage("user_123", text.trim());
       const botReply: Message = {
         from: "bot",
         text: response.reply,
@@ -40,8 +40,8 @@ const useChatMessages = () => {
       console.log("Bot Reply ", botReply);
       setMessages((prev) => [...prev, botReply]);
     } catch (err) {
-      setError('Failed to send message. Please try again.');
-      console.error('Error:', err);
+      setError("Failed to send message. Please try again.");
+      console.error("Error:", err);
     } finally {
       setIsTyping(false);
     }
@@ -65,7 +65,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
   }, [messages, isTyping]);
 
   return (
-    <div className="fixed  p-2 bottom-4 right-1 w-[380px] h-[600px] rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
+    <div className="fixed p-2 bottom-3 right-3 w-[95vw] max-w-[400px] h-[80vh] max-h-[600px] rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
       {/* Header */}
       <div className="text-black px-4 py-2 text-sm flex justify-between items-center border-b border-gray-200">
         <div className="flex items-center gap-1">

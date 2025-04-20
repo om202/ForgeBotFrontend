@@ -11,7 +11,7 @@ export default function ChatHead() {
     <>
       {/* Chatbox */}
       <div
-        className={`fixed bottom-0 right-4 z-50 transition-all duration-300 ease-out transform ${
+        className={`fixed bottom-0 right-0 z-50 transition-all duration-300 ease-out transform ${
           open
             ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 translate-y-4 scale-95 pointer-events-none"
@@ -29,8 +29,7 @@ export default function ChatHead() {
               <div className="absolute w-12 h-12 rounded-full animate-ping bg-indigo-300 duration-1000" />
 
               {/* Actual chat head */}
-              <div className="relative flex items-center justify-center rounded-full p-4 bg-indigo-600 hover:bg-indigo-500 cursor-pointer transition-all duration-500 ease-in-out">
-                <Image
+              <div className="relative flex items-center justify-center rounded-full p-4 bg-indigo-600 hover:bg-indigo-500 cursor-pointer transition-all duration-500 ease-in-out w-[64px] h-[64px] sm:w-[72px] sm:h-[72px]">                <Image
                   src="/chat_logo.png"
                   alt="ChatHead"
                   width={36}
