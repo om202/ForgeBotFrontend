@@ -65,7 +65,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
   }, [messages, isTyping]);
 
   return (
-    <div className="fixed p-2 bottom-4 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
+    <div className="fixed  p-2 bottom-4 right-1 w-[380px] h-[600px] rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
       {/* Header */}
       <div className="text-black px-4 py-2 text-sm flex justify-between items-center border-b border-gray-200">
         <div className="flex items-center gap-1">
