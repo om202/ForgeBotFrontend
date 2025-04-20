@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import ChatBox from "./ChatBox";
+import ChatBox from "./ChatBox/ChatBox";
 
 export default function ChatHead() {
   const [open, setOpen] = useState(false);

@@ -2,36 +2,38 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { chatService } from '../services/chatService';
+import { chatService } from '../../services/chatService';
+import { MessageBubble } from "./MessageBubble";
+import { TypingIndicator } from "./TypingIndicator";
 
-export default function ChatBox({
-  setOpen,
-}: {
+interface Message {
+  from: "user" | "bot";
+  text: string;
+}
+
+interface ChatBoxProps {
   open: boolean;
   setOpen: (val: boolean) => void;
-}) {
-  const [messages, setMessages] = useState([
+}
+
+const useChatMessages = () => {
+  const [messages, setMessages] = useState<Message[]>([
     { from: "bot", text: "Hi 👋 I'm ForgeBot. How can I help you today?" },
   ]);
-  const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const endRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const sendMessage = async (text: string) => {
+    if (!text.trim()) return;
 
-    const userMessage = { from: "user", text: input.trim() };
+    const userMessage: Message = { from: "user", text: text.trim() };
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
     setIsTyping(true);
     setError(null);
 
     try {
-      // Replace 'user_123' with actual user ID from your auth system
-      const response = await chatService.sendMessage('user_123', input.trim());
-      
-      const botReply = {
+      const response = await chatService.sendMessage('user_123', text.trim());
+      const botReply: Message = {
         from: "bot",
         text: response.reply,
       };
@@ -42,6 +44,19 @@ export default function ChatBox({
     } finally {
       setIsTyping(false);
     }
+  };
+
+  return { messages, isTyping, error, sendMessage };
+};
+
+export default function ChatBox({ setOpen }: ChatBoxProps) {
+  const [input, setInput] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
+  const { messages, isTyping, error, sendMessage } = useChatMessages();
+
+  const handleSend = () => {
+    sendMessage(input);
+    setInput("");
   };
 
   useEffect(() => {
@@ -67,55 +82,9 @@ export default function ChatBox({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex gap-2 items-baseline transition-all duration-300 ease-out transform ${
-              msg.from === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            {msg.from !== "user" && (
-              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
-                <Image
-                  src="/chat_logo.png"
-                  alt="bot"
-                  width={20}
-                  height={20}
-                  style={{ filter: "invert(1) brightness(200%)" }}
-                />
-              </div>
-            )}
-
-            <div
-              className={`text-sm px-3 py-2 rounded-md transition-all duration-300 ease-in-out transform ${
-                msg.from === "user"
-                  ? "bg-indigo-700 text-white text-right py-3 px-4 w-fit"
-                  : "bg-gray-100 py-3 px-4 self-start"
-              }`}
-            >
-              {msg.text}
-            </div>
-          </div>
+          <MessageBubble key={i} message={msg} />
         ))}
-
-        {/* Typing indicator */}
-        {isTyping && (
-          <div className="flex gap-2 items-baseline justify-start">
-            <div className="p-1.5 bg-indigo-600 rounded-4xl">
-              <Image
-                src="/chat_logo.png"
-                alt="bot"
-                width={20}
-                height={20}
-                style={{ filter: "invert(1) brightness(200%)" }}
-              />
-            </div>
-            <div className="typing bg-gray-100 py-3 px-4 rounded-md text-sm text-gray-500 animate-pulse">
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
-            </div>
-          </div>
-        )}
+        {isTyping && <TypingIndicator />}
         <div ref={endRef} />
       </div>
 
