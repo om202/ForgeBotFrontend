@@ -1,6 +1,7 @@
 import { Message } from "@/types/chat";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -32,6 +33,7 @@ export const MessageBubble = ({ message }: { message: Message }) => (
         message.text
       ) : (
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           components={{
             code({ className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || "");
@@ -58,6 +60,38 @@ export const MessageBubble = ({ message }: { message: Message }) => (
             li: ({ children }) => <li className="mb-1">{children}</li>,
             strong: ({ children }) => <strong className="font-bold">{children}</strong>,
             em: ({ children }) => <em className="italic">{children}</em>,
+            table: ({ children }) => (
+              <div className="overflow-x-auto my-4">
+                <table className="min-w-full divide-y divide-gray-300 border border-gray-300">
+                  {children}
+                </table>
+              </div>
+            ),
+            thead: ({ children }) => (
+              <thead className="bg-gray-50">
+                {children}
+              </thead>
+            ),
+            tbody: ({ children }) => (
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {children}
+              </tbody>
+            ),
+            tr: ({ children }) => (
+              <tr className="hover:bg-gray-50">
+                {children}
+              </tr>
+            ),
+            th: ({ children }) => (
+              <th className="py-2 px-4 text-left text-xs font-semibold text-gray-900">
+                {children}
+              </th>
+            ),
+            td: ({ children }) => (
+              <td className="py-2 px-4 text-sm text-gray-500">
+                {children}
+              </td>
+            ),
           }}
         >
           {message.text}
