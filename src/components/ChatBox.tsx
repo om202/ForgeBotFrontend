@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { chatService } from '../services/chatService';
 
 export default function ChatBox({
   setOpen,
@@ -14,25 +15,33 @@ export default function ChatBox({
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage = { from: "user", text: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsTyping(true);
+    setError(null);
 
-    // Simulate AI delay
-    setTimeout(() => {
+    try {
+      // Replace 'user_123' with actual user ID from your auth system
+      const response = await chatService.sendMessage('user_123', input.trim());
+      
       const botReply = {
         from: "bot",
-        text: "Thanks for your message. I'm just a placeholder for now! 🤖",
+        text: response.message,
       };
       setMessages((prev) => [...prev, botReply]);
+    } catch (err) {
+      setError('Failed to send message. Please try again.');
+      console.error('Error:', err);
+    } finally {
       setIsTyping(false);
-    }, 3000);
+    }
   };
 
   useEffect(() => {
@@ -137,6 +146,13 @@ export default function ChatBox({
         <Image src="/chat_logo.png" alt="alt" width={16} height={16} />
         <span className="font-medium text-gray-700">ForgeBot</span>
       </div>
+
+      {/* Error display */}
+      {error && (
+        <div className="px-3 py-2 text-red-500 text-sm text-center">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
