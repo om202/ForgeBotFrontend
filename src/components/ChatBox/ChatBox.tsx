@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { chatService } from '../../services/chatService';
+import { Rnd } from "react-rnd";
+import { chatService } from "../../services/chatService";
 import { MessageBubble } from "./MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
 
@@ -32,16 +33,12 @@ const useChatMessages = () => {
     setError(null);
 
     try {
-      const response = await chatService.sendMessage('user_123', text.trim());
-      const botReply: Message = {
-        from: "bot",
-        text: response.reply,
-      };
-      console.log("Bot Reply ", botReply);
+      const response = await chatService.sendMessage("user_123", text.trim());
+      const botReply: Message = { from: "bot", text: response.reply };
       setMessages((prev) => [...prev, botReply]);
     } catch (err) {
-      setError('Failed to send message. Please try again.');
-      console.error('Error:', err);
+      setError("Failed to send message. Please try again.");
+      console.error("Error:", err);
     } finally {
       setIsTyping(false);
     }
@@ -54,36 +51,8 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const { messages, isTyping, error, sendMessage } = useChatMessages();
-  const [dimensions, setDimensions] = useState({ width: 380, height: 528 }); // 528px = 132 * 4px (original height)
-  const [isResizing, setIsResizing] = useState(false);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing) return;
-    
-    const resizeType = (e.target as HTMLElement).dataset.resize;
-    if (resizeType === 'height') {
-      const newHeight = Math.max(400, window.innerHeight - e.clientY);
-      setDimensions(prev => ({ ...prev, height: newHeight }));
-    } else if (resizeType === 'width') {
-      const newWidth = Math.max(300, window.innerWidth - e.clientX);
-      setDimensions(prev => ({ ...prev, width: newWidth }));
-    }
-  }, [isResizing]);
-
-  const handleMouseUp = () => {
-    setIsResizing(false);
-  };
-
-  useEffect(() => {
-    if (isResizing) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [handleMouseMove, isResizing]);
+  const [defaultSize] = useState({ width: 380, height: 528 });
+  const [defaultPos, setDefaultPos] = useState({ x: window.innerWidth - 10, y: window.innerHeight - 10});
 
   const handleSend = () => {
     sendMessage(input);
@@ -94,26 +63,35 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  return (
-    <div 
-      className="fixed p-2 bottom-4 right-1 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white"
-      style={{ 
-        width: `${dimensions.width}px`, 
-        height: `${dimensions.height}px`,
-      }}
-    >
-      {/* Resize handles */}
-      <div 
-        className="absolute top-0 left-0 w-full h-1 cursor-n-resize hover:bg-indigo-200 transition-colors"
-        data-resize="height"
-        onMouseDown={() => setIsResizing(true)}
-      />
-      <div 
-        className="absolute top-0 left-0 w-1 h-full cursor-w-resize hover:bg-indigo-200 transition-colors"
-        data-resize="width"
-        onMouseDown={() => setIsResizing(true)}
-      />
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setDefaultPos({
+        x: window.innerWidth - 400,
+        y: window.innerHeight - 580,
+      });
+    }
+  }, []);
 
+  return (
+    <Rnd
+      disableDragging={true}
+      enableResizing={{
+        left: true,
+        top: true,
+      }}
+      default={{
+        x: defaultPos.x,
+        y: defaultPos.y,
+        width: defaultSize.width,
+        height: defaultSize.height,
+      }}
+      minWidth={300}
+      minHeight={400}
+      maxWidth={800}
+      maxHeight={800}
+      bounds="window"
+      className="fixed z-[9998] rounded-2xl shadow-lg border border-gray-200 bg-white flex flex-col overflow-hidden"
+    >
       {/* Header */}
       <div className="text-black px-4 py-2 text-sm flex justify-between items-center border-b border-gray-200">
         <div className="flex items-center gap-1">
@@ -146,7 +124,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            className={`flex-1 text-sm px-3 py-3 outline-none rounded-l-md border border-r-0 border-gray-200`}
+            className="flex-1 text-sm px-3 py-3 outline-none rounded-l-md border border-r-0 border-gray-200"
             placeholder="Type a message..."
           />
           <button
@@ -171,6 +149,6 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
           {error}
         </div>
       )}
-    </div>
+    </Rnd>
   );
 }
