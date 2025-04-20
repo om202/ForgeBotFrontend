@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Rnd } from "react-rnd";
-import { chatService } from "../../services/chatService";
+import { chatService } from '../../services/chatService';
 import { MessageBubble } from "./MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
 
@@ -33,12 +32,16 @@ const useChatMessages = () => {
     setError(null);
 
     try {
-      const response = await chatService.sendMessage("user_123", text.trim());
-      const botReply: Message = { from: "bot", text: response.reply };
+      const response = await chatService.sendMessage('user_123', text.trim());
+      const botReply: Message = {
+        from: "bot",
+        text: response.reply,
+      };
+      console.log("Bot Reply ", botReply);
       setMessages((prev) => [...prev, botReply]);
     } catch (err) {
-      setError("Failed to send message. Please try again.");
-      console.error("Error:", err);
+      setError('Failed to send message. Please try again.');
+      console.error('Error:', err);
     } finally {
       setIsTyping(false);
     }
@@ -51,8 +54,6 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const { messages, isTyping, error, sendMessage } = useChatMessages();
-  const [defaultSize] = useState({ width: 380, height: 528 });
-  const [defaultPos, setDefaultPos] = useState({ x: window.innerWidth - 10, y: window.innerHeight - 10});
 
   const handleSend = () => {
     sendMessage(input);
@@ -63,35 +64,8 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setDefaultPos({
-        x: window.innerWidth - 400,
-        y: window.innerHeight - 580,
-      });
-    }
-  }, []);
-
   return (
-    <Rnd
-      disableDragging={true}
-      enableResizing={{
-        left: true,
-        top: true,
-      }}
-      default={{
-        x: defaultPos.x,
-        y: defaultPos.y,
-        width: defaultSize.width,
-        height: defaultSize.height,
-      }}
-      minWidth={300}
-      minHeight={400}
-      maxWidth={800}
-      maxHeight={800}
-      bounds="window"
-      className="fixed z-[9998] rounded-2xl shadow-lg border border-gray-200 bg-white flex flex-col overflow-hidden"
-    >
+    <div className="fixed p-2 bottom-4 right-1 w-95 h-132 rounded-2xl shadow-lg z-[9998] flex flex-col overflow-hidden border border-gray-200 bg-white">
       {/* Header */}
       <div className="text-black px-4 py-2 text-sm flex justify-between items-center border-b border-gray-200">
         <div className="flex items-center gap-1">
@@ -124,7 +98,7 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            className="flex-1 text-sm px-3 py-3 outline-none rounded-l-md border border-r-0 border-gray-200"
+            className={`flex-1 text-sm px-3 py-3 outline-none rounded-l-md border border-r-0 border-gray-200`}
             placeholder="Type a message..."
           />
           <button
@@ -149,6 +123,6 @@ export default function ChatBox({ setOpen }: ChatBoxProps) {
           {error}
         </div>
       )}
-    </Rnd>
+    </div>
   );
 }
