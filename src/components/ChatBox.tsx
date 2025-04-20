@@ -33,7 +33,7 @@ export default function ChatBox({
       
       const botReply = {
         from: "bot",
-        text: response.message,
+        text: response.reply,
       };
       setMessages((prev) => [...prev, botReply]);
     } catch (err) {

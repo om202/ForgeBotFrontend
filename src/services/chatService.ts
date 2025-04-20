@@ -5,29 +5,30 @@
 
 interface ChatResponse {
   // Add the expected response structure from your API
-  message: string;
+  reply: string;
   // Add other fields your API returns
 }
 
 export const chatService = {
   async sendMessage(uid: string, message: string): Promise<ChatResponse> {
     try {
-      const response = await fetch('http://localhost:8000/chat', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({ uid, message }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
 
       return await response.json();
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       throw error;
     }
-  }
+  },
 };
